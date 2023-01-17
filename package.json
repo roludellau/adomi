@@ -2,9 +2,11 @@
   "name": "hapi",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "lib/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:tsc": "tsc --watch -p .",
+    "dev:serve": "nodemon -e js -w lib lib/server.js",
+    "dev": "run-p dev:*"
   },
   "author": "",
   "license": "ISC",
@@ -13,9 +15,13 @@
     "@hapi/hapi": "^21.2.0",
     "@hapi/inert": "^7.0.0",
     "@hapi/vision": "^7.0.0",
+    "@types/hapi": "^18.0.8",
     "handlebars": "^4.7.7",
     "hapi-geo-locate": "^4.1.1",
     "mysql2": "^3.0.1",
     "sequelize": "^6.28.0"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }
