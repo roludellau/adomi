@@ -42,9 +42,6 @@ export default class User extends Core{
         city: {
             type: DataTypes.STRING,
         }
-    }, 
-    {
-        tableName: 'user'
     })
 
     static CustomerModel = sequelize.define('customer', {
@@ -59,9 +56,6 @@ export default class User extends Core{
         id_Employee  : {
             type: DataTypes.INTEGER,
         },
-    },
-    {
-        tableName: 'customer'
     })
 
     static {
