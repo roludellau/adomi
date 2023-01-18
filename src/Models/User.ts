@@ -1,8 +1,9 @@
 import {sequelize, DataTypes} from '../dbconfig/db.js'
 import {Request, ResponseToolkit } from "@hapi/hapi";
+import Core from './Core'
 import Crypto from 'crypto'
 
-export default class User {
+export default class User extends Core{
 
     static UserModel = sequelize.define('user', {
         id: {
@@ -16,6 +17,12 @@ export default class User {
         },
         firstname: {
             type: DataTypes.STRING,
+        },
+        username: {
+            type: DataTypes.STRING,
+        },
+        password: {
+            type: DataTypes.STRING(1234),
         },
         phone: {
             type: DataTypes.INTEGER,
@@ -46,12 +53,6 @@ export default class User {
             primaryKey: true,
             unique: true
         },
-        username: {
-            type: DataTypes.STRING,
-        },
-        password: {
-            type: DataTypes.STRING(1234),
-        },
         id_Agency : {
             type: DataTypes.INTEGER,
         },
@@ -68,16 +69,6 @@ export default class User {
         this.CustomerModel.belongsTo(this.UserModel, {foreignKey: 'id'})
     }
 
-    static async queryTransaction (request: Request, query: (request: Request) => Promise<any>) {
-        const t = await sequelize.transaction()
-        try {
-          return query(request)
-        }
-        catch (error){
-          await t.rollback()
-          throw error
-        }
-    }
 
     static getAllUsers(): Promise<any[]> {
         return User.UserModel.findAll()
@@ -87,7 +78,6 @@ export default class User {
         let data = request.query
         let existingUser = await User.UserModel.findOne({ where: { firstname: data.firstname,  lastname: data.lastname } })
         if (!existingUser){
-            return (
                 User.UserModel.create({
                     lastname : data.lastname,
                     firstname : data.firstname,
@@ -107,7 +97,7 @@ export default class User {
                         id_Employee : data.id_Employee,
                     }).then(inserted2 => inserted2)
                 })
-            )
+            return true
         } else {
             return 'existing'
         }

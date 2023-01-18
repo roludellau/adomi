@@ -32,7 +32,8 @@ const init = async () => {
             method: 'POST',
             path: '/customers',
             handler: (request: Request, h: ResponseToolkit) => {
-                return User.queryTransaction(request, User.addUser)
+                User.queryTransaction(request, User.addUser)
+                return h.response('OK').code(200)
             }
         }
     ])
