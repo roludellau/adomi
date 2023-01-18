@@ -1,88 +1,47 @@
 'use strict';
+import {Server, Request, ResponseToolkit, ResponseObject, ServerRoute } from "@hapi/hapi";
+import User from './Models/User.js'
 
-const Hapi = require('@hapi/hapi');
-const { userInfo } = require('os');
-const path = require('path');
-//const Connection = require('./dbconfig')
-const User = require('./Models/User.js')
-var folder = "";
+//Gestion d'erreur à l'initialisation
+process.on('unhandledRejection', (err) => {console.log(err);process.exit(1);})
 
+//Notre serveur 
 const init = async () => {
 
-    const server = Hapi.Server({
+    const server = new Server({
         host: 'localhost',
-        port: 1234,
-        routes: {
-            files: {
-                relativeTo: path.join(__dirname, 'static')
+        port: 3000,
+    })
+
+    server.route([
+        {
+            method: 'GET',
+            path: ('/'),
+            handler: (request: Request, h: ResponseToolkit) => {
+                return 'Bonjour les copains'
+            }
+        },
+        {
+            method: 'GET',
+            path: '/users',
+            handler: (request: Request, h: ResponseToolkit) => {
+                return User.queryTransaction(request, User.getAllUsers)
+            }
+        },
+        {
+            method: 'POST',
+            path: '/users',
+            handler: (request: Request, h: ResponseToolkit) => {
+                return User.queryTransaction(request, User.addUser)
             }
         }
-    });
-
-    await server.register([{
-        plugin: require("hapi-geo-locate"),
-        options: {
-            enabledByDefault: true
-        }
-    }, {
-        plugin: require("@hapi/inert"),
-
-    },
-    {
-        plugin: require("@hapi/vision")
-    },
-    {
-        plugin: require("@hapi/basic")
-    }
-    ]);
-
-    server.views({
-        engines: {
-            hbs: require("handlebars")
-        },
-        path: path.join(__dirname, 'views'),
-        layout: 'default'
-    })
-    server.route([{
-        method: 'GET',
-        path: ('/'),
-        handler: (request, h) => {
-
-            return h.file('welcome.html');
-        }
-    },
-
-    {
-        method: 'GET',
-        path: '/users',
-        handler: async (request, h) => {
-
-            const userstest = await User.getUsers();
-
-            return userstest;
- 
-        }
-    },
-
-    /*
-        plugins:
-        npm install @hapi/hapi
-        npm install @hapi/inert
-        npm install @hapi/vision
-        npm install @hapi/basic
-    */
-
-    ]);
+    ])
 
     await server.start();
 
-    console.log(`Server started ${server.info.uri}`);
+    console.log(`Le serveur court à l'adresse ${server.info.uri}`);
 }
 
-process.on('unhandledRejection', (err) => {
-    console.log(err);
-    process.exit(1);
-})
 
 init();
 
