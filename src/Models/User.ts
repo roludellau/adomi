@@ -91,6 +91,8 @@ export default class User {
                 User.UserModel.create({
                     lastname : data.lastname,
                     firstname : data.firstname,
+                    username : data.username,
+                    password : Crypto.createHash('md5').update(data.password).digest('hex'),
                     phone : data.phone,
                     mail : data.mail,
                     street_name : data.street_name,
@@ -101,8 +103,6 @@ export default class User {
                     let lastId = inserted.dataValues.id
                     User.CustomerModel.create({
                         id : lastId,
-                        username : data.username,
-                        password : Crypto.createHash('md5').update(data.password).digest('hex'),
                         id_Agency : data.id_Agency,
                         id_Employee : data.id_Employee,
                     }).then(inserted2 => inserted2)
